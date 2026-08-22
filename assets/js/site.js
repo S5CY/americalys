@@ -1,0 +1,10 @@
+const menuButton = document.querySelector('.menu-button');
+const navigation = document.querySelector('#site-nav');
+menuButton?.addEventListener('click', () => { const open = menuButton.getAttribute('aria-expanded') === 'true'; menuButton.setAttribute('aria-expanded', String(!open)); navigation?.classList.toggle('open', !open); });
+navigation?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { navigation.classList.remove('open'); menuButton?.setAttribute('aria-expanded', 'false'); }));
+const observer = new IntersectionObserver((entries) => { entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); observer.unobserve(entry.target); } }); }, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach((element) => observer.observe(element));
+const year = document.querySelector('#year'); if (year) year.textContent = new Date().getFullYear();
+const today = document.querySelector('#today'); if (today) today.textContent = new Intl.DateTimeFormat('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date());
+const roster = document.querySelector('#roster'); const count = document.querySelector('#checked-count'); const confirmation = document.querySelector('#confirmation'); const storageKey = `americalys-attendance-${new Date().toISOString().slice(0, 10)}`;
+if (roster && count) { const saved = JSON.parse(localStorage.getItem(storageKey) || '[]'); roster.querySelectorAll('input').forEach((input) => { input.checked = saved.includes(input.value); }); count.textContent = saved.length; roster.addEventListener('change', () => { const checked = [...roster.querySelectorAll('input:checked')].map((input) => input.value); count.textContent = checked.length; localStorage.setItem(storageKey, JSON.stringify(checked)); confirmation?.classList.add('show'); window.clearTimeout(window.confirmationTimer); window.confirmationTimer = window.setTimeout(() => confirmation?.classList.remove('show'), 2200); }); }
