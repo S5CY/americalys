@@ -137,17 +137,27 @@ function prepareFinalStep() {
   document.querySelector("#change-member").addEventListener("click", () => showStep(3));
 }
 
-document.querySelector("#checkin-form").addEventListener("submit", (event) => {
+document.querySelector("#checkin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const date = document.querySelector("#rehearsal-date").value;
   const code = document.querySelector("#rehearsal-code").value.trim().toUpperCase();
-  const submissions = JSON.parse(localStorage.getItem(storageKey) || "[]");
-  const duplicate = submissions.find((entry) => entry.memberId === state.member.id && entry.date === date && entry.status !== "rejected");
-  if (duplicate) { alert(`${state.member.name} already has a ${duplicate.status} check-in for this rehearsal.`); return; }
-  const submission = { id: crypto.randomUUID(), memberId: state.member.id, name: state.member.name, family: state.member.family, section: state.member.section, date, code, status: "pending", submittedAt: new Date().toISOString(), reviewedAt: null };
-  submissions.unshift(submission); localStorage.setItem(storageKey, JSON.stringify(submissions));
-  document.querySelector("#receipt").innerHTML = `<div><span>Member</span><strong>${submission.name}</strong></div><div><span>Section</span><strong>${submission.section}</strong></div><div><span>Rehearsal</span><strong>${displayDate(submission.date)}</strong></div><div><span>Status</span><strong class="pending-text">Waiting</strong></div>`;
-  showStep(5);
+  const memberPin = document.querySelector("#member-pin").value.trim();
+  const submitButton = event.submitter; submitButton.disabled = true; submitButton.textContent = "Checking code…";
+  const submission = { action: "checkIn", memberId: state.member.id, name: state.member.name, family: state.member.family, section: state.member.section, date, code, memberPin };
+  try {
+    if (!window.AMERICALYS_ATTENDANCE_API) throw new Error("Attendance sync has not been configured yet.");
+    const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(submission) });
+    const result = await response.json();
+    if (!result.ok) throw new Error(result.error || "Check-in was not approved");
+    document.querySelector("#status-title").textContent = "You’re checked in.";
+    document.querySelector("#status-message").textContent = "Your code was accepted and your attendance was automatically approved.";
+    document.querySelector("#receipt").innerHTML = `<div><span>Member</span><strong>${submission.name}</strong></div><div><span>Section</span><strong>${submission.section}</strong></div><div><span>Rehearsal</span><strong>${displayDate(submission.date)}</strong></div><div><span>Status</span><strong class="approved-text">Approved</strong></div>`;
+    showStep(5);
+  } catch (error) {
+    alert(error.message);
+  } finally {
+    submitButton.disabled = false; submitButton.innerHTML = `Submit check-in <span aria-hidden="true">→</span>`;
+  }
 });
 
 document.querySelector("#new-checkin").addEventListener("click", () => { state.family = null; state.section = null; state.member = null; document.querySelector("#checkin-form").reset(); showStep(1); });

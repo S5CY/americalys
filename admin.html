@@ -6,18 +6,31 @@
   <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css">
-  <script src="assets/js/roster.js" defer></script><script src="assets/js/admin.js" defer></script>
+  <style>.session-panel{margin-bottom:1.5rem;padding-bottom:1.5rem}.session-panel h2{font-size:2.4rem;margin:0}.session-form{padding:1.5rem;display:grid;grid-template-columns:repeat(5,minmax(130px,1fr)) auto;gap:1rem;align-items:end}.session-form .form-field{margin:0}.session-form .button{border:0;height:54px;white-space:nowrap;cursor:pointer}.session-feedback{padding:0 1.5rem;color:#416548}.prototype-note code{background:#fff;padding:.15rem .3rem}@media(max-width:1000px){.session-form{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.session-form{grid-template-columns:1fr}}</style>
+  <script src="assets/js/attendance-config.js" defer></script><script src="assets/js/roster.js" defer></script><script src="assets/js/admin.js" defer></script>
 </head>
 <body class="admin-page">
   <header class="site-header solid portal-header"><a class="brand" href="index.html"><span class="brand-mark">A</span><span><strong>AmeriCal</strong><small>Youth Symphony</small></span></a><div class="admin-header-actions"><span class="prototype-label">Browser prototype</span><a class="back-link" href="checkin.html">Student check-in →</a></div></header>
   <main class="admin-main">
     <section class="admin-title"><div><p class="eyebrow dark">Staff portal</p><h1>Attendance<br><em>desk.</em></h1></div><div class="admin-date"><span>Today</span><strong id="admin-today"></strong></div></section>
     <section class="admin-metrics" aria-label="Attendance totals"><div><span>Waiting</span><strong id="metric-pending">0</strong></div><div><span>Approved</span><strong id="metric-approved">0</strong></div><div><span>Rejected</span><strong id="metric-rejected">0</strong></div><div><span>Total roster</span><strong id="metric-roster">0</strong></div></section>
+    <section class="admin-panel session-panel">
+      <div class="admin-toolbar"><div><p class="flow-kicker">Automatic approval</p><h2>Create rehearsal session</h2></div></div>
+      <form id="session-form" class="session-form">
+        <label class="form-field"><span>Saturday date</span><input id="session-date" type="date" required></label>
+        <label class="form-field"><span>Rehearsal code</span><input id="session-code" type="text" minlength="4" maxlength="12" required placeholder="Example: MUSIC26"></label>
+        <label class="form-field"><span>Opens</span><input id="session-opens" type="datetime-local" required></label>
+        <label class="form-field"><span>Closes</span><input id="session-closes" type="datetime-local" required></label>
+        <label class="form-field"><span>Admin key</span><input id="admin-key" type="password" autocomplete="current-password" required placeholder="Stored only for this tab"></label>
+        <button class="button button-dark" type="submit">Save session →</button>
+      </form>
+      <p class="session-feedback" id="session-feedback" role="status"></p>
+    </section>
     <section class="admin-panel">
       <div class="admin-toolbar"><div class="status-tabs" id="status-tabs"><button class="active" data-filter="all">All</button><button data-filter="pending">Waiting</button><button data-filter="approved">Approved</button><button data-filter="rejected">Rejected</button></div><label class="admin-date-filter">Rehearsal <select id="admin-date-filter"><option value="all">All dates</option></select></label></div>
       <div class="attendance-table-wrap"><table class="attendance-table"><thead><tr><th>Member</th><th>Section</th><th>Date</th><th>Code entered</th><th>Status</th><th>Review</th></tr></thead><tbody id="attendance-body"></tbody></table><div class="empty-state" id="empty-state"><span>♩</span><h2>No check-ins yet.</h2><p>New submissions will appear here for review.</p></div></div>
     </section>
-    <p class="prototype-note"><strong>Prototype note:</strong> this admin page currently sees submissions made in this same browser only. A shared database and protected staff login are required before using it across student devices.</p>
+    <p class="prototype-note" id="connection-note"><strong>Setup required:</strong> deploy the included Google Apps Script and paste its endpoint into <code>assets/js/attendance-config.js</code>.</p>
   </main>
 </body>
 </html>
