@@ -35,14 +35,34 @@ Object.entries(familyMeta).forEach(([family, meta]) => {
 
 function renderSections() {
   document.querySelector("#section-help").textContent = `${state.family} · ${familyCount(state.family)} members`;
-  const sections = [...new Set(roster.filter((member) => member.family === state.family).map((member) => member.section))].sort();
+  let sections = [...new Set(roster.filter((member) => member.family === state.family).map((member) => member.section))].sort();
+  if (state.family === "Strings") sections = ["Violin", ...sections.filter((section) => !section.startsWith("Violin"))];
   sectionGrid.replaceChildren();
   sections.forEach((section) => {
-    const count = roster.filter((member) => member.family === state.family && member.section === section).length;
+    const count = roster.filter((member) => member.family === state.family && (section === "Violin" ? member.section.startsWith("Violin") : member.section === section)).length;
+    const button = document.createElement("button"); button.type = "button"; button.className = "section-choice";
+    button.innerHTML = `<span>${section}</span><small>${section === "Violin" ? "Violin 1 & Violin 2" : `${count} ${count === 1 ? "member" : "members"}`}</small><b aria-hidden="true">→</b>`;
+    button.addEventListener("click", () => {
+      if (section === "Violin") { renderViolinSections(); return; }
+      chooseSection(section);
+    });
+    sectionGrid.append(button);
+  });
+}
+
+function chooseSection(section) {
+  state.section = section; state.member = null; nameSearch.value = ""; renderMembers(); showStep(3);
+}
+
+function renderViolinSections() {
+  document.querySelector("#section-help").textContent = "Strings · Violin · Choose your part";
+  sectionGrid.replaceChildren();
+  const back = document.createElement("button"); back.type = "button"; back.className = "section-group-back"; back.textContent = "← All string sections"; back.addEventListener("click", renderSections); sectionGrid.append(back);
+  ["Violin 1", "Violin 2"].forEach((section) => {
+    const count = roster.filter((member) => member.section === section).length;
     const button = document.createElement("button"); button.type = "button"; button.className = "section-choice";
     button.innerHTML = `<span>${section}</span><small>${count} ${count === 1 ? "member" : "members"}</small><b aria-hidden="true">→</b>`;
-    button.addEventListener("click", () => { state.section = section; state.member = null; nameSearch.value = ""; renderMembers(); showStep(3); });
-    sectionGrid.append(button);
+    button.addEventListener("click", () => chooseSection(section)); sectionGrid.append(button);
   });
 }
 

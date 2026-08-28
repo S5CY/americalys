@@ -41,7 +41,6 @@ window.AMERICALYS_ROSTER = [
   { name: "Matthew Wang", family: "Winds", section: "Oboe" },
   { name: "Meryl Chen", family: "Strings", section: "Violin 1" },
   { name: "Michael Zhang", family: "Winds", section: "Trombone" },
-  { name: "Michelle Yu", family: "Strings", section: "Violin" },
   { name: "Nathan Liang", family: "Strings", section: "Cello" },
   { name: "Nicole Luo", family: "Strings", section: "Violin 2" },
   { name: "Phoebe Xie", family: "Strings", section: "Cello" },
@@ -69,7 +68,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Shijie Rong", family: "Winds", section: "Saxophone" },
   { name: "Lillian Che", family: "Winds", section: "Flute" },
   { name: "Daniel Guo", family: "Winds", section: "Trumpet" },
-  { name: "Eric Wang", family: "Strings", section: "Violin" },
+  { name: "Eric Wang", family: "Strings", section: "Violin 2" },
   { name: "Jimmy Xiang", family: "Strings", section: "Violin 2" },
   { name: "Junshery Xiong", family: "Strings", section: "Viola" },
   { name: "Andy Jiao", family: "Winds", section: "Clarinet" }

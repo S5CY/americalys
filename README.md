@@ -21,8 +21,8 @@ The initial orchestra copy, dates, addresses, and photos were adapted from [amer
 
 - `checkin.html` walks members through family, section, name, Saturday rehearsal date, and rehearsal code.
 - `admin.html` shows submitted codes and lets staff approve, reject, filter, or reset entries.
-- `assets/js/roster.js` is the single roster source and currently contains the 74 members supplied in the typed August 2026 roster.
+- `assets/js/roster.js` is the single roster source and currently contains 73 members. Strings are grouped by instrument, with Violin opening into Violin 1 and Violin 2.
 
 This version stores submissions in browser storage, so the student and admin pages must be opened in the same browser to share data. Before live use across separate phones, replace the storage layer with a shared database and add authenticated admin access.
 
-The supplied roster lists Michelle Yu and Eric Wang as Violin without a numbered section, and lists Farrah and Selina without last names.
+Farrah and Selina are listed without last names in the supplied roster.
