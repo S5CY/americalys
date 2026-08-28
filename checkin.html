@@ -1,5 +1,86 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="AmeriCal Youth Symphony rehearsal check-in."><title>Member Check-in | AmeriCal Youth Symphony</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"><link rel="stylesheet" href="assets/css/site.css"><script src="assets/js/site.js" defer></script></head>
-<body class="checkin-page"><a class="skip-link" href="#main">Skip to content</a><header class="site-header solid"><a class="brand" href="index.html"><span class="brand-mark">A</span><span><strong>AmeriCal</strong><small>Youth Symphony</small></span></a><a class="back-link" href="index.html">← Back to home</a></header>
-<main id="main" class="checkin-main"><section class="checkin-intro reveal"><p class="eyebrow dark">Member portal</p><h1>Rehearsal<br><em>check-in.</em></h1><p>Select your name below when you arrive. This placeholder roster can be replaced with the real member list later.</p><div class="rehearsal-meta"><span>Saturday rehearsal</span><span>7:00–9:00 pm</span><span id="today"></span></div></section>
-<section class="roster-card reveal" aria-labelledby="roster-title"><div class="roster-head"><div><p class="eyebrow dark">Attendance</p><h2 id="roster-title">Who’s here?</h2></div><div class="attendance-count"><strong id="checked-count">0</strong><span>checked in</span></div></div><div class="roster" id="roster"><label class="person"><input type="checkbox" value="Person 1"><span class="checkmark">✓</span><span class="person-number">01</span><strong>Person 1</strong><small>Instrument / Section</small></label><label class="person"><input type="checkbox" value="Person 2"><span class="checkmark">✓</span><span class="person-number">02</span><strong>Person 2</strong><small>Instrument / Section</small></label><label class="person"><input type="checkbox" value="Person 3"><span class="checkmark">✓</span><span class="person-number">03</span><strong>Person 3</strong><small>Instrument / Section</small></label></div><div class="checkin-confirmation" id="confirmation" role="status" aria-live="polite">Attendance is saved on this device for today.</div></section></main>
-<footer class="checkin-footer"><p>Need help? Speak with your section leader or conductor.</p><small>AmeriCal Youth Symphony · San Diego, California</small></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="AmeriCal Youth Symphony rehearsal check-in.">
+  <title>Rehearsal Check-in | AmeriCal Youth Symphony</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <style>.suggestion-heading{margin:1.2rem 0 .3rem;padding:.75rem 1rem;background:#f5e8ce;color:#7a541e;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}</style>
+  <script src="assets/js/roster.js" defer></script>
+  <script src="assets/js/checkin.js" defer></script>
+</head>
+<body class="portal-page">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header solid portal-header">
+    <a class="brand" href="index.html"><span class="brand-mark">A</span><span><strong>AmeriCal</strong><small>Youth Symphony</small></span></a>
+    <a class="back-link" href="index.html">← Back to home</a>
+  </header>
+
+  <main id="main" class="portal-shell">
+    <aside class="portal-intro">
+      <p class="eyebrow dark">Member portal</p>
+      <h1>Saturday<br><em>check-in.</em></h1>
+      <p>Choose your section, find your name, and enter today’s rehearsal code. A staff member will approve your arrival.</p>
+      <ol class="progress-list" id="progress-list">
+        <li class="active"><span>01</span>Orchestra family</li>
+        <li><span>02</span>Section</li>
+        <li><span>03</span>Your name</li>
+        <li><span>04</span>Date &amp; code</li>
+      </ol>
+    </aside>
+
+    <section class="flow-card" aria-live="polite">
+      <div class="flow-step active" data-step="1">
+        <p class="flow-kicker">Step 1 of 4</p>
+        <h2>Where do you play?</h2>
+        <p class="flow-help">Select your orchestra family.</p>
+        <div class="family-grid" id="family-grid"></div>
+      </div>
+
+      <div class="flow-step" data-step="2">
+        <button class="step-back" type="button" data-back="1">← Back</button>
+        <p class="flow-kicker">Step 2 of 4</p>
+        <h2>Choose your section.</h2>
+        <p class="flow-help" id="section-help"></p>
+        <div class="section-grid" id="section-grid"></div>
+      </div>
+
+      <div class="flow-step" data-step="3">
+        <button class="step-back" type="button" data-back="2">← Back</button>
+        <p class="flow-kicker">Step 3 of 4</p>
+        <h2>Find your name.</h2>
+        <p class="flow-help" id="name-help"></p>
+        <label class="search-field"><span class="sr-only">Search names</span><input id="name-search" type="search" placeholder="Type your first or last name" autocomplete="off"><span aria-hidden="true">⌕</span></label>
+        <div class="member-list" id="member-list"></div>
+      </div>
+
+      <div class="flow-step" data-step="4">
+        <button class="step-back" type="button" data-back="3">← Back</button>
+        <p class="flow-kicker">Step 4 of 4</p>
+        <h2>Finish check-in.</h2>
+        <div class="member-summary" id="member-summary"></div>
+        <form id="checkin-form">
+          <label class="form-field"><span>Rehearsal date</span><select id="rehearsal-date" required></select><small>Only Saturdays are available.</small></label>
+          <label class="form-field"><span>Rehearsal code</span><input id="rehearsal-code" type="text" maxlength="12" placeholder="Enter the code given at rehearsal" autocomplete="one-time-code" required><small>Codes are not case-sensitive.</small></label>
+          <button class="button button-dark submit-checkin" type="submit">Submit check-in <span aria-hidden="true">→</span></button>
+        </form>
+      </div>
+
+      <div class="flow-step success-step" data-step="5">
+        <div class="status-orbit"><span>✓</span></div>
+        <p class="flow-kicker">Check-in received</p>
+        <h2>Waiting to be approved.</h2>
+        <p>Your arrival was sent to the attendance queue. A staff member will review it shortly.</p>
+        <div class="receipt" id="receipt"></div>
+        <button class="text-button" id="new-checkin" type="button">Check in another member</button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="checkin-footer"><p>Need help? Speak with your section leader or conductor.</p><small>AmeriCal Youth Symphony · Saturday rehearsals · 7:00–9:00 pm</small></footer>
+</body>
+</html>

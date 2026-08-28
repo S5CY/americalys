@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex"><title>Attendance Admin | AmeriCal Youth Symphony</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/roster.js" defer></script><script src="assets/js/admin.js" defer></script>
+</head>
+<body class="admin-page">
+  <header class="site-header solid portal-header"><a class="brand" href="index.html"><span class="brand-mark">A</span><span><strong>AmeriCal</strong><small>Youth Symphony</small></span></a><div class="admin-header-actions"><span class="prototype-label">Browser prototype</span><a class="back-link" href="checkin.html">Student check-in →</a></div></header>
+  <main class="admin-main">
+    <section class="admin-title"><div><p class="eyebrow dark">Staff portal</p><h1>Attendance<br><em>desk.</em></h1></div><div class="admin-date"><span>Today</span><strong id="admin-today"></strong></div></section>
+    <section class="admin-metrics" aria-label="Attendance totals"><div><span>Waiting</span><strong id="metric-pending">0</strong></div><div><span>Approved</span><strong id="metric-approved">0</strong></div><div><span>Rejected</span><strong id="metric-rejected">0</strong></div><div><span>Total roster</span><strong id="metric-roster">0</strong></div></section>
+    <section class="admin-panel">
+      <div class="admin-toolbar"><div class="status-tabs" id="status-tabs"><button class="active" data-filter="all">All</button><button data-filter="pending">Waiting</button><button data-filter="approved">Approved</button><button data-filter="rejected">Rejected</button></div><label class="admin-date-filter">Rehearsal <select id="admin-date-filter"><option value="all">All dates</option></select></label></div>
+      <div class="attendance-table-wrap"><table class="attendance-table"><thead><tr><th>Member</th><th>Section</th><th>Date</th><th>Code entered</th><th>Status</th><th>Review</th></tr></thead><tbody id="attendance-body"></tbody></table><div class="empty-state" id="empty-state"><span>♩</span><h2>No check-ins yet.</h2><p>New submissions will appear here for review.</p></div></div>
+    </section>
+    <p class="prototype-note"><strong>Prototype note:</strong> this admin page currently sees submissions made in this same browser only. A shared database and protected staff login are required before using it across student devices.</p>
+  </main>
+</body>
+</html>
