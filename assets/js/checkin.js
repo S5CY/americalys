@@ -95,8 +95,17 @@ function memberButton(member) {
 
 async function apiPost(body) {
   if (!window.AMERICALYS_ATTENDANCE_API) throw new Error("Attendance sync has not been configured yet.");
-  const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) });
-  return response.json();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 12000);
+  try {
+    const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: controller.signal });
+    const text = await response.text();
+    try { return JSON.parse(text); }
+    catch { throw new Error("The check-in service needs to be updated. Please try again shortly."); }
+  } catch (error) {
+    if (error.name === "AbortError") throw new Error("The check-in service took too long. Please try again.");
+    throw error;
+  } finally { clearTimeout(timeout); }
 }
 
 function renderMembers(query = "") {

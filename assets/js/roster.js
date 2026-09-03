@@ -46,7 +46,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Phoebe Xie", family: "Strings", section: "Cello" },
   { name: "Reina Wang", family: "Strings", section: "Violin 2" },
   { name: "Richie Luo", family: "Strings", section: "Violin 2" },
-  { name: "Sabrina Long", family: "Strings", section: "Violin 2" },
+  { name: "Sabrina Long", family: "Strings", section: "Violin 1" },
   { name: "Selina", family: "Strings", section: "Violin 1" },
   { name: "Serena Liang", family: "Strings", section: "Violin 2" },
   { name: "Sophia Ma", family: "Winds", section: "Flute" },
@@ -56,7 +56,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Tiffany Lee", family: "Winds", section: "Trombone" },
   { name: "Tony Li", family: "Percussion", section: "Piano" },
   { name: "Tony Yi", family: "Winds", section: "Clarinet" },
-  { name: "Vanessa Wang", family: "Strings", section: "Violin 2" },
+  { name: "Vanessa Wang", family: "Strings", section: "Violin 1" },
   { name: "Victoria Fang", family: "Winds", section: "Flute" },
   { name: "Vincent Yao", family: "Strings", section: "Violin 1" },
   { name: "Wu Shug Liu", family: "Winds", section: "Oboe" },
@@ -71,7 +71,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Eric Wang", family: "Strings", section: "Violin 2" },
   { name: "Jimmy Xiang", family: "Strings", section: "Violin 2" },
   { name: "Junshery Xiong", family: "Strings", section: "Viola" },
-  { name: "Andy Jiao", family: "Winds", section: "Clarinet" }
+  { name: "Annie Jiao", family: "Strings", section: "Violin 1" }
 ].map((member, index) => ({ id: index + 1, ...member }));
 
 window.AMERICALYS_STORAGE_KEY = "americalys-checkins-v2";
