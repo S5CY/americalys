@@ -10,12 +10,13 @@ function setupAttendanceSystem() {
   setupSheet_(spreadsheet, SHEETS.ATTENDANCE, ["Attendance ID", "Date", "Member ID", "Name", "Family", "Section", "Status", "Submitted At", "Approved At", "Code Entered"]);
   setupSheet_(spreadsheet, SHEETS.ATTEMPTS, ["Attempt ID", "Date", "Member ID", "Name", "Section", "Result", "Submitted At", "Code Entered"]);
   seedMembers_(spreadsheet.getSheetByName(SHEETS.MEMBERS));
+  CacheService.getScriptCache().remove("active-members-v1");
   SpreadsheetApp.flush();
 }
 
 function doGet(event) {
   const action = String(event.parameter.action || "health");
-  if (action === "health") return json_({ ok: true, service: "AmeriCal Attendance" });
+  if (action === "health") { activeMembers_(); return json_({ ok: true, service: "AmeriCal Attendance" }); }
   return json_({ ok: false, error: "Unknown action" });
 }
 
@@ -35,7 +36,7 @@ function doPost(event) {
 
 function verifyMember_(body) {
   const memberId = Number(body.memberId);
-  const member = readRows_(SHEETS.MEMBERS).find(row => Number(row["Member ID"]) === memberId && truthy_(row.Active));
+  const member = activeMembers_().find(row => Number(row["Member ID"]) === memberId);
   if (!member) return { ok: false, error: "Unknown or inactive member" };
   if (clean_(member["Member PIN"]) !== clean_(body.memberPin)) return { ok: false, error: "Incorrect member PIN" };
   return { ok: true, name: member.Name, section: member.Section };
@@ -46,7 +47,7 @@ function checkIn_(body) {
   lock.waitLock(10000);
   try {
     const date = clean_(body.date); const memberId = Number(body.memberId); const code = clean_(body.code).toUpperCase();
-    const member = readRows_(SHEETS.MEMBERS).find(row => Number(row["Member ID"]) === memberId && truthy_(row.Active));
+    const member = activeMembers_().find(row => Number(row["Member ID"]) === memberId);
     if (!member) return attempt_(body, "Unknown or inactive member");
     if (clean_(member["Member PIN"]) !== clean_(body.memberPin)) return attempt_(body, "Incorrect member PIN");
     const session = readRows_(SHEETS.SESSIONS).find(row => sheetDate_(row.Date) === date && truthy_(row.Active));
@@ -112,6 +113,14 @@ function seedMembers_(sheet) {
 function readRows_(name) {
   const sheet = sheet_(name); const values = sheet.getDataRange().getValues(); if (values.length < 2) return [];
   const headers = values.shift().map(String); return values.filter(row => row.some(value => value !== "")).map(row => Object.fromEntries(headers.map((header, index) => [header, row[index]])));
+}
+function activeMembers_() {
+  const cache = CacheService.getScriptCache();
+  const cached = cache.get("active-members-v1");
+  if (cached) return JSON.parse(cached);
+  const members = readRows_(SHEETS.MEMBERS).filter(row => truthy_(row.Active));
+  cache.put("active-members-v1", JSON.stringify(members), 300);
+  return members;
 }
 function append_(name, row) { sheet_(name).appendRow(row); }
 function sheet_(name) { const sheet = SpreadsheetApp.openById(SHEET_ID).getSheetByName(name); if (!sheet) throw new Error(`${name} sheet is not set up`); return sheet; }

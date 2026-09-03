@@ -95,17 +95,27 @@ function memberButton(member) {
 
 async function apiPost(body) {
   if (!window.AMERICALYS_ATTENDANCE_API) throw new Error("Attendance sync has not been configured yet.");
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 12000);
-  try {
-    const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: controller.signal });
-    const text = await response.text();
-    try { return JSON.parse(text); }
-    catch { throw new Error("The check-in service needs to be updated. Please try again shortly."); }
-  } catch (error) {
-    if (error.name === "AbortError") throw new Error("The check-in service took too long. Please try again.");
-    throw error;
-  } finally { clearTimeout(timeout); }
+  let lastError;
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), attempt === 0 ? 9000 : 15000);
+    try {
+      const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body), signal: controller.signal });
+      const text = await response.text();
+      try { return JSON.parse(text); }
+      catch { throw new Error("The check-in service needs to be updated. Please try again shortly."); }
+    } catch (error) {
+      lastError = error;
+      if (error.name !== "AbortError" || attempt === 1) break;
+    } finally { clearTimeout(timeout); }
+  }
+  if (lastError?.name === "AbortError") throw new Error("The attendance service is temporarily unavailable. Please try again in a moment.");
+  throw lastError;
+}
+
+function warmAttendanceService() {
+  if (!window.AMERICALYS_ATTENDANCE_API) return;
+  fetch(`${window.AMERICALYS_ATTENDANCE_API}?action=health&t=${Date.now()}`, { mode: "no-cors", cache: "no-store" }).catch(() => {});
 }
 
 function renderMembers(query = "") {
@@ -195,3 +205,4 @@ document.querySelector("#checkin-form").addEventListener("submit", async (event)
 
 document.querySelector("#new-checkin").addEventListener("click", () => { state.family = null; state.section = null; state.member = null; document.querySelector("#member-code-form").reset(); document.querySelector("#checkin-form").reset(); document.querySelectorAll(".form-feedback").forEach((item) => item.textContent = ""); showStep(1); });
 populateDates();
+warmAttendanceService();
