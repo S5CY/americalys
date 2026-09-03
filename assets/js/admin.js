@@ -34,7 +34,7 @@ function render() {
   tableBody.replaceChildren(); emptyState.hidden = visible.length > 0;
   visible.forEach((row) => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td><strong>${row.Name}</strong><small>${timeLabel(row["Submitted At"])}</small></td><td>${row.Family}<small>${row.Section}</small></td><td>${dateLabel(row.date)}</td><td><code>Verified</code></td><td><span class="status-pill ${row.status}">${row.Status}</span></td><td><small>Automatic</small></td>`;
+    tr.innerHTML = `<td><strong>${row.Name}</strong><small>${timeLabel(row["Submitted At"])}</small></td><td>${row.Family || ""}<small>${row.Section}</small></td><td>${row.date ? dateLabel(row.date) : "—"}</td><td><code>${row["Code Entered"] || "—"}</code></td><td><span class="status-pill ${row.status}">${row.Status}</span></td><td><small>${row.Result || "Automatic"}</small></td>`;
     tableBody.append(tr);
   });
 }
@@ -46,7 +46,9 @@ async function loadData() {
   try {
     sessionStorage.setItem("americalys-admin-key", adminKey());
     const data = await apiPost({ action: "adminData" }); if (!data.ok) throw new Error(data.error);
-    rows = data.attendance || []; note.textContent = `Connected to Google Sheets · ${rows.length} attendance records`;
+    const attendance = data.attendance || [];
+    const attempts = (data.attempts || []).map((row) => ({ ...row, Family: "", Status: "Rejected" }));
+    rows = [...attendance, ...attempts]; note.textContent = `Connected to Google Sheets · ${attendance.length} approved check-ins · ${attempts.length} rejected attempts`;
     render();
   } catch (error) { note.innerHTML = `<strong>Connection error:</strong> ${error.message}`; }
 }

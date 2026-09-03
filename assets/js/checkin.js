@@ -93,6 +93,12 @@ function memberButton(member) {
   return button;
 }
 
+async function apiPost(body) {
+  if (!window.AMERICALYS_ATTENDANCE_API) throw new Error("Attendance sync has not been configured yet.");
+  const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(body) });
+  return response.json();
+}
+
 function renderMembers(query = "") {
   document.querySelector("#name-help").textContent = `${state.family} · ${state.section}`;
   const sectionMembers = roster.filter((member) => member.family === state.family && member.section === state.section);
@@ -137,28 +143,46 @@ function prepareFinalStep() {
   document.querySelector("#change-member").addEventListener("click", () => showStep(3));
 }
 
+document.querySelector("#member-code-form").addEventListener("submit", async (event) => {
+  event.preventDefault();
+  const feedback = document.querySelector("#member-code-feedback");
+  const memberPin = document.querySelector("#member-pin").value.trim();
+  const button = event.submitter;
+  button.disabled = true; feedback.classList.remove("success"); feedback.textContent = "Checking member code…";
+  try {
+    const result = await apiPost({ action: "verifyMember", memberId: state.member.id, memberPin });
+    if (!result.ok) throw new Error(result.error || "Invalid member code. Please try again.");
+    feedback.classList.add("success"); feedback.textContent = "Member code accepted.";
+    document.querySelector("#verified-member-summary").innerHTML = `<span class="summary-check">✓</span><div><strong>${state.member.name}</strong><small>${state.member.family} · ${state.member.section}</small></div>`;
+    showStep(5);
+  } catch (error) {
+    feedback.textContent = error.message === "Incorrect member PIN" ? "Invalid member code. Please try again." : error.message;
+    document.querySelector("#member-pin").select();
+  } finally { button.disabled = false; button.innerHTML = `Verify member code <span aria-hidden="true">→</span>`; }
+});
+
 document.querySelector("#checkin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const date = document.querySelector("#rehearsal-date").value;
   const code = document.querySelector("#rehearsal-code").value.trim().toUpperCase();
   const memberPin = document.querySelector("#member-pin").value.trim();
-  const submitButton = event.submitter; submitButton.disabled = true; submitButton.textContent = "Checking code…";
+  const feedback = document.querySelector("#practice-code-feedback");
+  const submitButton = event.submitter; submitButton.disabled = true; submitButton.textContent = "Checking practice code…"; feedback.textContent = "";
   const submission = { action: "checkIn", memberId: state.member.id, name: state.member.name, family: state.member.family, section: state.member.section, date, code, memberPin };
   try {
-    if (!window.AMERICALYS_ATTENDANCE_API) throw new Error("Attendance sync has not been configured yet.");
-    const response = await fetch(window.AMERICALYS_ATTENDANCE_API, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(submission) });
-    const result = await response.json();
+    const result = await apiPost(submission);
     if (!result.ok) throw new Error(result.error || "Check-in was not approved");
     document.querySelector("#status-title").textContent = "You’re checked in.";
     document.querySelector("#status-message").textContent = "Your code was accepted and your attendance was automatically approved.";
     document.querySelector("#receipt").innerHTML = `<div><span>Member</span><strong>${submission.name}</strong></div><div><span>Section</span><strong>${submission.section}</strong></div><div><span>Rehearsal</span><strong>${displayDate(submission.date)}</strong></div><div><span>Status</span><strong class="approved-text">Approved</strong></div>`;
-    showStep(5);
+    showStep(6);
   } catch (error) {
-    alert(error.message);
+    feedback.textContent = error.message === "Incorrect rehearsal code" ? "Invalid practice code. Please try again." : error.message;
+    document.querySelector("#rehearsal-code").select();
   } finally {
     submitButton.disabled = false; submitButton.innerHTML = `Submit check-in <span aria-hidden="true">→</span>`;
   }
 });
 
-document.querySelector("#new-checkin").addEventListener("click", () => { state.family = null; state.section = null; state.member = null; document.querySelector("#checkin-form").reset(); showStep(1); });
+document.querySelector("#new-checkin").addEventListener("click", () => { state.family = null; state.section = null; state.member = null; document.querySelector("#member-code-form").reset(); document.querySelector("#checkin-form").reset(); document.querySelectorAll(".form-feedback").forEach((item) => item.textContent = ""); showStep(1); });
 populateDates();

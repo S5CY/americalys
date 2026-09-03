@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/site.css">
-  <style>.suggestion-heading{margin:1.2rem 0 .3rem;padding:.75rem 1rem;background:#f5e8ce;color:#7a541e;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}.section-group-back{grid-column:1/-1;padding:.75rem 0;margin-bottom:.5rem;background:none;border:0;border-bottom:1px solid var(--line);color:#687074;text-align:left;font:600 .68rem var(--sans);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.approved-text{color:#416548}</style>
+  <style>.suggestion-heading{margin:1.2rem 0 .3rem;padding:.75rem 1rem;background:#f5e8ce;color:#7a541e;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;font-weight:600}.section-group-back{grid-column:1/-1;padding:.75rem 0;margin-bottom:.5rem;background:none;border:0;border-bottom:1px solid var(--line);color:#687074;text-align:left;font:600 .68rem var(--sans);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}.approved-text{color:#416548}.form-feedback{min-height:1.4em;margin:.8rem 0;color:#a1372d;font-weight:600}.form-feedback.success{color:#416548}</style>
   <script src="assets/js/attendance-config.js" defer></script>
   <script src="assets/js/roster.js" defer></script>
   <script src="assets/js/checkin.js" defer></script>
@@ -25,18 +25,19 @@
     <aside class="portal-intro">
       <p class="eyebrow dark">Member portal</p>
       <h1>Saturday<br><em>check-in.</em></h1>
-      <p>Choose your section, find your name, and enter today’s rehearsal code. A staff member will approve your arrival.</p>
+      <p>Choose your section and name, verify your private member code, then enter today’s rehearsal code.</p>
       <ol class="progress-list" id="progress-list">
         <li class="active"><span>01</span>Orchestra family</li>
         <li><span>02</span>Section</li>
         <li><span>03</span>Your name</li>
-        <li><span>04</span>Date &amp; code</li>
+        <li><span>04</span>Member code</li>
+        <li><span>05</span>Date &amp; practice code</li>
       </ol>
     </aside>
 
     <section class="flow-card" aria-live="polite">
       <div class="flow-step active" data-step="1">
-        <p class="flow-kicker">Step 1 of 4</p>
+        <p class="flow-kicker">Step 1 of 5</p>
         <h2>Where do you play?</h2>
         <p class="flow-help">Select your orchestra family.</p>
         <div class="family-grid" id="family-grid"></div>
@@ -44,7 +45,7 @@
 
       <div class="flow-step" data-step="2">
         <button class="step-back" type="button" data-back="1">← Back</button>
-        <p class="flow-kicker">Step 2 of 4</p>
+        <p class="flow-kicker">Step 2 of 5</p>
         <h2>Choose your section.</h2>
         <p class="flow-help" id="section-help"></p>
         <div class="section-grid" id="section-grid"></div>
@@ -52,7 +53,7 @@
 
       <div class="flow-step" data-step="3">
         <button class="step-back" type="button" data-back="2">← Back</button>
-        <p class="flow-kicker">Step 3 of 4</p>
+        <p class="flow-kicker">Step 3 of 5</p>
         <h2>Find your name.</h2>
         <p class="flow-help" id="name-help"></p>
         <label class="search-field"><span class="sr-only">Search names</span><input id="name-search" type="search" placeholder="Type your first or last name" autocomplete="off"><span aria-hidden="true">⌕</span></label>
@@ -61,18 +62,30 @@
 
       <div class="flow-step" data-step="4">
         <button class="step-back" type="button" data-back="3">← Back</button>
-        <p class="flow-kicker">Step 4 of 4</p>
-        <h2>Finish check-in.</h2>
+        <p class="flow-kicker">Step 4 of 5</p>
+        <h2>Enter your member code.</h2>
         <div class="member-summary" id="member-summary"></div>
-        <form id="checkin-form">
-          <label class="form-field"><span>Rehearsal date</span><select id="rehearsal-date" required></select><small>Only Saturdays are available.</small></label>
-          <label class="form-field"><span>Your private member PIN</span><input id="member-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit PIN" autocomplete="off" required><small>This prevents someone else checking in under your name.</small></label>
-          <label class="form-field"><span>Rehearsal code</span><input id="rehearsal-code" type="text" maxlength="12" placeholder="Enter the code given at rehearsal" autocomplete="one-time-code" required><small>Codes are not case-sensitive.</small></label>
-          <button class="button button-dark submit-checkin" type="submit">Submit check-in <span aria-hidden="true">→</span></button>
+        <form id="member-code-form">
+          <label class="form-field"><span>Member code</span><input id="member-pin" type="password" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" placeholder="6-digit private code" autocomplete="off" required><small>This is your personal code and stays the same.</small></label>
+          <p class="form-feedback" id="member-code-feedback" role="alert"></p>
+          <button class="button button-dark submit-checkin" type="submit">Verify member code <span aria-hidden="true">→</span></button>
         </form>
       </div>
 
-      <div class="flow-step success-step" data-step="5">
+      <div class="flow-step" data-step="5">
+        <button class="step-back" type="button" data-back="4">← Back</button>
+        <p class="flow-kicker">Step 5 of 5</p>
+        <h2>Choose the rehearsal.</h2>
+        <div class="member-summary" id="verified-member-summary"></div>
+        <form id="checkin-form">
+          <label class="form-field"><span>Rehearsal date</span><select id="rehearsal-date" required></select><small>Only Saturdays are available.</small></label>
+          <label class="form-field"><span>Practice code</span><input id="rehearsal-code" type="text" maxlength="12" placeholder="Enter today’s code" autocomplete="one-time-code" required><small>The admin announces this code at rehearsal.</small></label>
+          <p class="form-feedback" id="practice-code-feedback" role="alert"></p>
+          <button class="button button-dark submit-checkin" type="submit">Check in <span aria-hidden="true">→</span></button>
+        </form>
+      </div>
+
+      <div class="flow-step success-step" data-step="6">
         <div class="status-orbit"><span>✓</span></div>
         <p class="flow-kicker">Check-in received</p>
         <h2 id="status-title">Check-in received.</h2>

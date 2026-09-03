@@ -7,8 +7,8 @@ function setupAttendanceSystem() {
   const spreadsheet = SpreadsheetApp.openById(SHEET_ID);
   setupSheet_(spreadsheet, SHEETS.MEMBERS, ["Member ID", "Name", "Family", "Section", "Member PIN", "Active"]);
   setupSheet_(spreadsheet, SHEETS.SESSIONS, ["Date", "Code", "Opens At", "Closes At", "Active", "Created At"]);
-  setupSheet_(spreadsheet, SHEETS.ATTENDANCE, ["Attendance ID", "Date", "Member ID", "Name", "Family", "Section", "Status", "Submitted At", "Approved At"]);
-  setupSheet_(spreadsheet, SHEETS.ATTEMPTS, ["Attempt ID", "Date", "Member ID", "Name", "Section", "Result", "Submitted At"]);
+  setupSheet_(spreadsheet, SHEETS.ATTENDANCE, ["Attendance ID", "Date", "Member ID", "Name", "Family", "Section", "Status", "Submitted At", "Approved At", "Code Entered"]);
+  setupSheet_(spreadsheet, SHEETS.ATTEMPTS, ["Attempt ID", "Date", "Member ID", "Name", "Section", "Result", "Submitted At", "Code Entered"]);
   seedMembers_(spreadsheet.getSheetByName(SHEETS.MEMBERS));
   SpreadsheetApp.flush();
 }
@@ -22,6 +22,7 @@ function doGet(event) {
 function doPost(event) {
   try {
     const body = JSON.parse(event.postData.contents || "{}");
+    if (body.action === "verifyMember") return json_(verifyMember_(body));
     if (body.action === "checkIn") return json_(checkIn_(body));
     if (body.action === "adminData") { requireAdmin_(body.adminKey); return json_({ ok: true, sessions: readRows_(SHEETS.SESSIONS), attendance: readRows_(SHEETS.ATTENDANCE), attempts: readRows_(SHEETS.ATTEMPTS) }); }
     if (body.action === "saveSession") { requireAdmin_(body.adminKey); return json_(saveSession_(body)); }
@@ -30,6 +31,14 @@ function doPost(event) {
   } catch (error) {
     return json_({ ok: false, error: error.message || "Request failed" });
   }
+}
+
+function verifyMember_(body) {
+  const memberId = Number(body.memberId);
+  const member = readRows_(SHEETS.MEMBERS).find(row => Number(row["Member ID"]) === memberId && truthy_(row.Active));
+  if (!member) return { ok: false, error: "Unknown or inactive member" };
+  if (clean_(member["Member PIN"]) !== clean_(body.memberPin)) return { ok: false, error: "Incorrect member PIN" };
+  return { ok: true, name: member.Name, section: member.Section };
 }
 
 function checkIn_(body) {
@@ -48,7 +57,7 @@ function checkIn_(body) {
     const attendance = readRows_(SHEETS.ATTENDANCE);
     if (attendance.some(row => sheetDate_(row.Date) === date && Number(row["Member ID"]) === memberId && row.Status === "Approved")) return attempt_(body, "Already checked in");
     const id = Utilities.getUuid(); const timestamp = new Date();
-    append_(SHEETS.ATTENDANCE, [id, date, memberId, member.Name, member.Family, member.Section, "Approved", timestamp, timestamp]);
+    append_(SHEETS.ATTENDANCE, [id, date, memberId, member.Name, member.Family, member.Section, "Approved", timestamp, timestamp, code]);
     return { ok: true, status: "approved", message: "Check-in approved", attendanceId: id };
   } finally { lock.releaseLock(); }
 }
@@ -74,7 +83,7 @@ function setSessionActive_(body) {
 }
 
 function attempt_(body, result) {
-  append_(SHEETS.ATTEMPTS, [Utilities.getUuid(), clean_(body.date), Number(body.memberId) || "", clean_(body.name), clean_(body.section), result, new Date()]);
+  append_(SHEETS.ATTEMPTS, [Utilities.getUuid(), clean_(body.date), Number(body.memberId) || "", clean_(body.name), clean_(body.section), result, new Date(), clean_(body.code).toUpperCase()]);
   return { ok: false, status: "rejected", error: result };
 }
 
@@ -85,7 +94,7 @@ function requireAdmin_(value) {
 
 function setupSheet_(spreadsheet, name, headers) {
   const sheet = spreadsheet.getSheetByName(name) || spreadsheet.insertSheet(name);
-  if (sheet.getLastRow() === 0) sheet.appendRow(headers);
+  sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.setFrozenRows(1); sheet.getRange(1, 1, 1, headers.length).setFontWeight("bold").setBackground("#142534").setFontColor("#ffffff");
   sheet.autoResizeColumns(1, headers.length);
 }
