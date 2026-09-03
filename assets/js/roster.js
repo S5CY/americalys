@@ -4,6 +4,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Alex Nian", family: "Strings", section: "Violin 2" },
   { name: "Alex Zhu", family: "Winds", section: "Clarinet" },
   { name: "Alice Chen", family: "Strings", section: "Cello" },
+  { name: "Annie Jiao", family: "Strings", section: "Violin 1" },
   { name: "Arthur Lin", family: "Strings", section: "Cello" },
   { name: "Asher Chen", family: "Strings", section: "Bass" },
   { name: "Audrey Wu", family: "Strings", section: "Violin 2" },
@@ -63,15 +64,14 @@ window.AMERICALYS_ROSTER = [
   { name: "Yunhan Mo", family: "Strings", section: "Cello" },
   { name: "Zen Parris", family: "Strings", section: "Violin 1" },
   { name: "Cooper He", family: "Strings", section: "Violin 1" },
-  { name: "Ziteng Chen", family: "Winds", section: "Clarinet" },
+  { name: "Zitang Chen", family: "Winds", section: "Clarinet" },
   { name: "Wentian Chen", family: "Winds", section: "Trumpet" },
   { name: "Shijie Rong", family: "Winds", section: "Saxophone" },
   { name: "Lillian Che", family: "Winds", section: "Flute" },
   { name: "Daniel Guo", family: "Winds", section: "Trumpet" },
   { name: "Eric Wang", family: "Strings", section: "Violin 2" },
   { name: "Jimmy Xiang", family: "Strings", section: "Violin 2" },
-  { name: "Junshery Xiong", family: "Strings", section: "Viola" },
-  { name: "Annie Jiao", family: "Strings", section: "Violin 1" }
+  { name: "Junshery Xiong", family: "Strings", section: "Viola" }
 ].map((member, index) => ({ id: index + 1, ...member }));
 
 window.AMERICALYS_STORAGE_KEY = "americalys-checkins-v2";
