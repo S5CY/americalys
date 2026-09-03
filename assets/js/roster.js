@@ -64,7 +64,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Yunhan Mo", family: "Strings", section: "Cello" },
   { name: "Zen Parris", family: "Strings", section: "Violin 1" },
   { name: "Cooper He", family: "Strings", section: "Violin 1" },
-  { name: "Zitang Chen", family: "Winds", section: "Clarinet" },
+  { name: "Ziteng Chen", family: "Winds", section: "Clarinet" },
   { name: "Wentian Chen", family: "Winds", section: "Trumpet" },
   { name: "Shijie Rong", family: "Winds", section: "Saxophone" },
   { name: "Lillian Che", family: "Winds", section: "Flute" },
