@@ -1,9 +1,10 @@
 (() => {
   const form = document.querySelector("#join-form"); if (!form) return;
   const status = document.querySelector("#form-status"); const success = document.querySelector("#application-success"); const submit = form.querySelector("button[type='submit']"); const endpoint = window.AMERICALYS_JOIN_API || "";
+  if (!endpoint) { submit.firstChild.textContent = "Applications opening soon "; submit.disabled = true; }
   const setStatus = (message, type = "") => { status.textContent = message; status.className = `form-status ${type}`.trim(); };
   form.addEventListener("submit", async (event) => {
-    event.preventDefault(); if (!endpoint) { setStatus("Applications are being connected. Please email americalyouthorchestra@gmail.com for now.", "error"); return; }
+    event.preventDefault(); if (!endpoint) { return; }
     const data = new FormData(form); const clip = data.get("clip");
     if (!clip || !clip.size) { setStatus("Please add a performance clip.", "error"); return; }
     if (clip.size > 10 * 1024 * 1024) { setStatus("Please choose a clip smaller than 10 MB.", "error"); return; }
