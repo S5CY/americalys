@@ -7,6 +7,7 @@
     event.preventDefault(); if (!endpoint) { return; }
     const data = new FormData(form); const clip = data.get("clip");
     if (!clip || !clip.size) { setStatus("Please add a performance clip.", "error"); return; }
+    if (!clip.type.startsWith("audio/") && !clip.type.startsWith("video/")) { setStatus("Please choose an audio or video performance clip.", "error"); return; }
     if (clip.size > 10 * 1024 * 1024) { setStatus("Please choose a clip smaller than 10 MB.", "error"); return; }
     submit.disabled = true; setStatus("Uploading your application…", "working");
     try {
