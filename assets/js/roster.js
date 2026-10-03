@@ -6,7 +6,7 @@ window.AMERICALYS_ROSTER = [
   { name: "Alice Chen", family: "Strings", section: "Cello" },
   { name: "Annie Jiao", family: "Strings", section: "Violin 1" },
   { name: "Arthur Lin", family: "Strings", section: "Cello" },
-  { name: "Asher Chen", family: "Strings", section: "Bass" },
+  { name: "Asher Chen", family: "Strings", section: "Double Bass" },
   { name: "Audrey Wu", family: "Strings", section: "Violin 2" },
   { name: "Benjamin He", family: "Winds", section: "Bassoon" },
   { name: "Calvin He", family: "Winds", section: "Bassoon" },

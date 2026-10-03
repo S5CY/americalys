@@ -7,7 +7,7 @@ Local changes only; no commit or deployment performed.
 - history.html: Milestones, grouped by year with expandable galleries and full-size photo viewing.
 - mission.html: proposed mission, visibly labeled as a working draft.
 - regulations.html: proposed guidelines, visibly labeled as unapproved.
-- donate.html: both user-confirmed donation addresses, preserved exactly as supplied.
+- donate.html: sdacy2016@gmail.com is the sole Zelle address (corrected October 3); orchestra parents should include the musician’s name and instrument section in the payment note.
 
 The About dropdown links to Our story, Mission, Regulations, and Milestones.
 Events and Rehearsals are no longer top-level navigation items.
@@ -27,7 +27,7 @@ The homepage and footer/calendar links retain access to the calendar.
 
 - Conducting masterclass graduation: exact date, photographs, and any approved description.
 - Leadership approval of the draft mission and regulations.
-- Review image permissions and the two Zelle recipient addresses in the bank interface.
+- Review image permissions and the Zelle recipient address in the bank interface.
 - Review existing provisional November 2026 events before treating them as confirmed.
 
 ## Editing
