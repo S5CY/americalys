@@ -28,9 +28,12 @@ milestones.forEach((item) => {
         parseFloat(getComputedStyle(item).borderTopWidth) +
         parseFloat(getComputedStyle(item).borderBottomWidth);
     item.style.overflow = 'hidden';
+    // Long photo galleries need more travel time than short accordion panels.
+    // Ease in as well as out, rather than revealing most of the gallery at once.
+    const duration = Math.min(1200, Math.max(700, Math.abs(endHeight - startHeight) * .45));
     animation = item.animate(
       [{ height: startHeight + 'px' }, { height: endHeight + 'px' }],
-      { duration: 380, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' }
+      { duration, easing: 'cubic-bezier(.45, 0, .25, 1)', fill: 'both' }
     );
     animation.onfinish = () => {
       item.open = open;
@@ -48,12 +51,12 @@ milestones.forEach((item) => {
   item.addEventListener('pointerenter', () => {
     clearTimeout(timer);
     if (!hoverDevice.matches || expanded) return;
-    timer = setTimeout(() => { hoverOpened = true; setExpanded(true); }, 180);
+    timer = setTimeout(() => { hoverOpened = true; setExpanded(true); }, 260);
   });
   item.addEventListener('pointerleave', () => {
     clearTimeout(timer);
     if (hoverOpened && !pinned && !item.contains(document.activeElement)) {
-      timer = setTimeout(() => { hoverOpened = false; setExpanded(false); }, 160);
+      timer = setTimeout(() => { hoverOpened = false; setExpanded(false); }, 500);
     }
   });
   summary.addEventListener('click', (event) => {

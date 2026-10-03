@@ -1,6 +1,7 @@
 :root{--ink:#101a24;--navy:#142534;--cream:#f3eee4;--paper:#faf8f3;--gold:#e0ae5a;--rust:#9d3e28;--line:rgba(16,26,36,.18);--serif:"Instrument Serif",Georgia,serif;--sans:"DM Sans",Arial,sans-serif}
 
 /* About menu and the community archive */
+.history-section{overflow-anchor:none}
 .calendar-title-short{display:none}.calendar-agenda{display:grid;gap:.65rem;margin-top:1rem}.calendar-agenda a{font-size:.8rem;border-bottom:1px solid var(--line);padding:.6rem 0}
 @media(max-width:560px){.calendar-title-long{display:none}.calendar-title-short{display:inline}}
 :focus-visible{outline:3px solid var(--gold);outline-offset:5px}
