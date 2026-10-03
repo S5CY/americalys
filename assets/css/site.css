@@ -4,8 +4,11 @@
 .calendar-title-short{display:none}.calendar-agenda{display:grid;gap:.65rem;margin-top:1rem}.calendar-agenda a{font-size:.8rem;border-bottom:1px solid var(--line);padding:.6rem 0}
 @media(max-width:560px){.calendar-title-long{display:none}.calendar-title-short{display:inline}}
 :focus-visible{outline:3px solid var(--gold);outline-offset:5px}
-.about-menu{position:relative}.about-menu summary{cursor:pointer;list-style:none;padding:.75rem 0}
-.about-menu summary::-webkit-details-marker{display:none}.about-menu summary span{margin-left:.4rem}
+.about-menu{position:relative}.about-menu summary{cursor:pointer;list-style:none;padding:.75rem 0;display:flex;align-items:center;gap:.75rem}
+.about-menu summary::-webkit-details-marker{display:none}
+.about-menu summary span{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;flex:none;font-size:0}
+.about-menu summary span::before{content:"";width:9px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-2px) rotate(45deg);transition:transform .18s ease}
+.about-menu[open] summary span::before{transform:translateY(2px) rotate(225deg)}
 .about-links{position:absolute;left:-1.25rem;top:100%;min-width:210px;background:var(--navy);border:1px solid #53616c;padding:.6rem;box-shadow:0 16px 32px #0003}
 .site-header .about-links a{display:block;padding:.8rem;border:0!important}.about-links a:hover{background:#ffffff12}
 .history-hero{position:relative}.history-hero>.text-link{align-self:flex-start}
