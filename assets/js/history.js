@@ -1,31 +1,78 @@
 const milestones = [...document.querySelectorAll('.milestone')];
 const hoverDevice = window.matchMedia('(hover: hover) and (pointer: fine)');
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const galleryControls = new Map();
 milestones.forEach((item) => {
   const summary = item.querySelector('summary');
   let hoverOpened = false;
   let pinned = false;
   let timer;
+  let animation;
+  let expanded = item.open;
+  const setExpanded = (open, immediate = false) => {
+    const startHeight = item.getBoundingClientRect().height;
+    animation?.cancel();
+    animation = null;
+    expanded = open;
+    item.style.height = '';
+    item.style.overflow = '';
+    if (immediate || reducedMotion.matches) {
+      item.open = open;
+      return;
+    }
+    // Keep native details open during the animation; close only after collapsing.
+    item.open = true;
+    const endHeight = open
+      ? item.getBoundingClientRect().height
+      : summary.getBoundingClientRect().height +
+        parseFloat(getComputedStyle(item).borderTopWidth) +
+        parseFloat(getComputedStyle(item).borderBottomWidth);
+    item.style.overflow = 'hidden';
+    animation = item.animate(
+      [{ height: startHeight + 'px' }, { height: endHeight + 'px' }],
+      { duration: 380, easing: 'cubic-bezier(.22, 1, .36, 1)', fill: 'both' }
+    );
+    animation.onfinish = () => {
+      item.open = open;
+      animation.cancel();
+      animation = null;
+      item.style.overflow = '';
+    };
+  };
+  galleryControls.set(item, () => {
+    clearTimeout(timer);
+    hoverOpened = false;
+    pinned = true;
+    setExpanded(true, true);
+  });
   item.addEventListener('pointerenter', () => {
-    if (!hoverDevice.matches || item.open) return;
-    timer = setTimeout(() => { item.open = true; hoverOpened = true; }, 220);
+    clearTimeout(timer);
+    if (!hoverDevice.matches || expanded) return;
+    timer = setTimeout(() => { hoverOpened = true; setExpanded(true); }, 180);
   });
   item.addEventListener('pointerleave', () => {
     clearTimeout(timer);
-    if (hoverOpened && !pinned && !item.contains(document.activeElement)) item.open = false;
-    hoverOpened = false;
+    if (hoverOpened && !pinned && !item.contains(document.activeElement)) {
+      timer = setTimeout(() => { hoverOpened = false; setExpanded(false); }, 160);
+    }
   });
   summary.addEventListener('click', (event) => {
+    event.preventDefault();
     clearTimeout(timer);
     if (hoverOpened && !pinned) {
-      event.preventDefault(); pinned = true; hoverOpened = false;
-    } else pinned = !item.open;
+      pinned = true; hoverOpened = false;
+    } else {
+      pinned = !expanded;
+      hoverOpened = false;
+      setExpanded(!expanded);
+    }
   });
 });
 function openLinkedMilestone() {
   const id = decodeURIComponent(location.hash.slice(1));
   const item = document.getElementById(id);
   if (!item?.classList.contains('milestone')) return;
-  item.open = true;
+  galleryControls.get(item)?.();
   requestAnimationFrame(() => item.scrollIntoView({ block: 'start' }));
 }
 window.addEventListener('hashchange', openLinkedMilestone);
